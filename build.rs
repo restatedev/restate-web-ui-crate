@@ -9,7 +9,7 @@
 // by the Apache License, Version 2.0.
 
 use std::env;
-use std::fs::{DirEntry, File, create_dir_all};
+use std::fs::{create_dir_all, DirEntry, File};
 use std::path::{Path, PathBuf};
 
 use anyhow::Context;
