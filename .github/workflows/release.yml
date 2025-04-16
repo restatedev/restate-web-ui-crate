@@ -5,6 +5,10 @@ jobs:
   check-version:
     runs-on: warp-ubuntu-latest-x64-4x
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Read old version (from previous commit)
         id: old
         run: |
