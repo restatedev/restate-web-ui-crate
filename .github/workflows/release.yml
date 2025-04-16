@@ -18,6 +18,7 @@ jobs:
       - name: Read new version (from current commit)
         id: new
         run: |
+          ls
           new_version=$(grep '^version = "' Cargo.toml | sed -E 's/version = "([^"]+)".*/\1/')
           echo "new_version=$new_version" >> $GITHUB_OUTPUT
         shell: bash
