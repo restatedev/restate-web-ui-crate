@@ -8,13 +8,12 @@ jobs:
       - name: Read old version (from previous commit)
         id: old
         run: |
-          # Attempt to show Cargo.toml from the previous commit
           if git show HEAD^:Cargo.toml > old_Cargo.toml 2>/dev/null; then
             old_version=$(grep '^version = "' old_Cargo.toml | sed -E 's/version = "([^"]+)".*/\1/')
             echo "old_version=$old_version" >> $GITHUB_OUTPUT
           else
-            # If there's no previous commit, leave old_version empty
             echo "old_version=" >> $GITHUB_OUTPUT
+          fi
         shell: bash
       - name: Read new version (from current commit)
         id: new
