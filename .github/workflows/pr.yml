@@ -1,0 +1,13 @@
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  restate-ui:
+    name: Validate Restate UI artifact
+    runs-on: warp-ubuntu-latest-arm64-2x
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the committed UI artifact matches the published one in restate-web-ui
+        run: ./tools/scripts/verify-ui-artifact
