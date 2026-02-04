@@ -1,14 +1,14 @@
 [package]
 name = "restate-web-ui"
-description = "Rust wrapper for Facebook's RocksDB embeddable database"
+description = "Rust wrapper restate's web UI"
 publish = false
-edition = "2021"
-version = "0.1.40"
+edition = "2024"
+version = "0.1.41"
 
 [dependencies]
 include_dir = "0.7.4"
 
 [build-dependencies]
 anyhow = "1.0.68"
-zip = { version = "3.0" }
+zip = { version = "7.3" }
 
