@@ -3,7 +3,7 @@ name = "restate-web-ui"
 description = "Rust wrapper restate's web UI"
 publish = false
 edition = "2024"
-version = "0.1.53"
+version = "0.1.54"
 
 [dependencies]
 include_dir = "0.7.4"
