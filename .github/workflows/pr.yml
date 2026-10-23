@@ -11,3 +11,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify the committed UI artifact matches the published one in restate-web-ui
         run: ./scripts/verify-ui-artifact
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check the UI artifact can be read
+        run: cargo test

@@ -9,34 +9,75 @@
 // by the Apache License, Version 2.0.
 
 use std::env;
-use std::fs::{create_dir_all, DirEntry, File};
-use std::path::{Path, PathBuf};
+use std::fmt::Write;
+use std::fs;
+use std::path::PathBuf;
 
-use anyhow::Context;
+const BLOCK: usize = 512;
 
-fn main() -> anyhow::Result<()> {
-    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap()).join("assets");
+// Indexes the UI archive (uncompressed ustar) and generates `lookup.rs`, a
+// `match` from each file path to its byte range in the archive.
+fn main() {
+    let archive_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join(format!(
+        "assets/ui-v{}.tar",
+        env::var("CARGO_PKG_VERSION").unwrap()
+    ));
+    println!("cargo:rerun-if-changed=assets");
+    println!("cargo:rustc-env=UI_ARCHIVE={}", archive_path.display());
 
-    let ui_zip = std::fs::read_dir("./assets")
-        .expect("assets directory is there")
-        .collect::<Result<Vec<DirEntry>, _>>()
-        .expect("can read the assets directory")
-        .into_iter()
-        .find(|entry| {
-            entry.path().to_string_lossy().contains("ui-")
-                && entry.path().to_string_lossy().contains(".zip")
-        })
-        .expect("a ui-.zip must be present");
+    let archive = fs::read(&archive_path)
+        .unwrap_or_else(|err| panic!("cannot read {}: {err}", archive_path.display()));
 
-    unzip(&ui_zip.path(), &out_dir)
+    let mut lookup = String::from("match path {\n");
+    let mut has_index = false;
+    let mut offset = 0;
+
+    // The archive ends with zero-filled blocks.
+    while let Some(header) = archive
+        .get(offset..offset + BLOCK)
+        .filter(|header| header[0] != 0)
+    {
+        assert_eq!(
+            &header[257..263],
+            b"ustar\0",
+            "UI archive must be in ustar format"
+        );
+        let size = usize::from_str_radix(field(&header[124..136]).trim(), 8)
+            .expect("tar entry size must be octal");
+        let start = offset + BLOCK;
+        let end = start + size;
+        assert!(end <= archive.len(), "UI archive is truncated");
+
+        match header[156] {
+            b'0' | b'\0' => {
+                let name = field(&header[0..100]);
+                let path = match field(&header[345..500]) {
+                    "" => name.to_owned(),
+                    prefix => format!("{prefix}/{name}"),
+                };
+                let path = path.strip_prefix("./").unwrap_or(&path);
+                has_index |= path == "index.html";
+                writeln!(
+                    lookup,
+                    "    {path:?} => Some(&File {{ start: {start}, end: {end} }}),"
+                )
+                .unwrap();
+            }
+            b'5' => {}
+            other => panic!("unsupported tar entry type {:?}", other as char),
+        }
+
+        offset = start + size.next_multiple_of(BLOCK);
+    }
+
+    assert!(has_index, "UI archive must contain index.html");
+    lookup.push_str("    _ => None,\n}\n");
+
+    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    fs::write(out_dir.join("lookup.rs"), lookup).unwrap();
 }
 
-fn unzip(zip_out_file: &Path, out_name: &Path) -> anyhow::Result<()> {
-    let zip_out_file_copy = zip_out_file.to_owned();
-    let out_dir_copy = out_name.to_owned();
-
-    let zip_file = File::open(zip_out_file_copy)?;
-    let mut archive = zip::ZipArchive::new(zip_file)?;
-    create_dir_all(&out_dir_copy)?;
-    archive.extract(out_dir_copy).context("unzip failed")
+fn field(bytes: &[u8]) -> &str {
+    let end = bytes.iter().position(|&b| b == 0).unwrap_or(bytes.len());
+    std::str::from_utf8(&bytes[..end]).expect("tar header fields must be UTF-8")
 }
