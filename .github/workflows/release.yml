@@ -49,7 +49,7 @@ jobs:
       upload-url: ${{ steps.create-release.outputs.upload_url }}
       version: ${{ needs.check-version.outputs.version }}
       tag: v${{ needs.check-version.outputs.version }}
-      artifact-name: ui-v${{ needs.check-version.outputs.version }}.zip
+      artifact-name: ui-v${{ needs.check-version.outputs.version }}.tar
     steps:
       - run: echo "has-updated -- ${{ needs.check-version.outputs.has-updated }}"
       - name: Checkout
@@ -88,7 +88,7 @@ jobs:
           sign-commits: true
           commit-message: |
             [UI] Updating Restate UI to ${{ needs.release.outputs.tag }}
-            published at https://github.com/restatedev/restate-web-ui/releases/download/${{ needs.release.outputs.tag }}/ui-${{ needs.release.outputs.tag }}.zip
+            published at https://github.com/restatedev/restate-web-ui/releases/download/${{ needs.release.outputs.tag }}/ui-${{ needs.release.outputs.tag }}.tar
           body: |
             [UI] Updating Restate UI to ${{ needs.release.outputs.tag }}
-            published at https://github.com/restatedev/restate-web-ui/releases/download/${{ needs.release.outputs.tag }}/ui-${{ needs.release.outputs.tag }}.zip
+            published at https://github.com/restatedev/restate-web-ui/releases/download/${{ needs.release.outputs.tag }}/ui-${{ needs.release.outputs.tag }}.tar
