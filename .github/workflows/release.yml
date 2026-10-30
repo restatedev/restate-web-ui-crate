@@ -72,17 +72,27 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Generate token for restate
+        id: app-token
+        uses: actions/create-github-app-token@v3.3.0
+        with:
+          client-id: ${{ vars.WEB_UI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.WEB_UI_APP_PRIVATE_KEY }}
+          owner: restatedev
+          repositories: restate
+          permission-contents: write
+          permission-pull-requests: write
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.TOKEN_FOR_RESTATE_REPO }}
+          token: ${{ steps.app-token.outputs.token }}
           repository: restatedev/restate
       - name: Update restate-web-ui version
         run: cargo add restate-web-ui --git https://github.com/restatedev/restate-web-ui-crate --tag ${{ needs.release.outputs.tag }} --package restate-admin --optional
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.TOKEN_FOR_RESTATE_REPO }}
+          token: ${{ steps.app-token.outputs.token }}
           branch: update-ui-${{needs.release.outputs.tag}}
           title: "[Restate UI] Update to ${{ needs.release.outputs.tag }}"
           sign-commits: true
