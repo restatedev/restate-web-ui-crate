@@ -69,8 +69,7 @@ jobs:
     runs-on: warp-ubuntu-latest-x64-4x
     needs: release
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     steps:
       - name: Generate token for restate
         id: app-token
