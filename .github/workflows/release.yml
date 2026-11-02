@@ -6,7 +6,7 @@ jobs:
     runs-on: warp-ubuntu-latest-x64-4x
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           fetch-depth: 0
       - name: Read old version (from previous commit)
@@ -53,12 +53,12 @@ jobs:
     steps:
       - run: echo "has-updated -- ${{ needs.check-version.outputs.has-updated }}"
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           fetch-depth: 0
       - name: Create a release
         id: create-release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           commit: ${{ github.sha }}
           makeLatest: true
@@ -82,14 +82,14 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           token: ${{ steps.app-token.outputs.token }}
           repository: restatedev/restate
       - name: Update restate-web-ui version
         run: cargo add restate-web-ui --git https://github.com/restatedev/restate-web-ui-crate --tag ${{ needs.release.outputs.tag }} --package restate-admin --optional
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: update-ui-${{needs.release.outputs.tag}}

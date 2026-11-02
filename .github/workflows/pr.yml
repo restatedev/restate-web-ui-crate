@@ -8,7 +8,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.4.0
       - name: Verify the committed UI artifact matches the published one in restate-web-ui
         run: ./scripts/verify-ui-artifact
       - uses: dtolnay/rust-toolchain@stable
