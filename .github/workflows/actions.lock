@@ -4,8 +4,8 @@
 version: 'v0.0.3'
 workflows:
     '.github/workflows/pr.yml':
+        - 'actions-rust-lang/setup-rust-toolchain@v1.17.0'
         - 'actions/checkout@v4.4.0'
-        - 'dtolnay/rust-toolchain@stable'
     '.github/workflows/release.yml':
         - 'actions/checkout@v4.4.0'
         - 'actions/create-github-app-token@v3.3.0'
@@ -13,6 +13,13 @@ workflows:
         - 'peter-evans/create-pull-request@v7.0.11'
     '.github/workflows/verify-lockfile.yml': []
 dependencies:
+    'actions-rust-lang/setup-rust-toolchain@v1.17.0':
+        ref: 'v1.17.0'
+        commit: 'sha1-166cdcfd11aee3cb47222f9ddb555ce30ddb9659'
+        owner_id: 103899579
+        repo_id: 482610590
+        uses:
+            - 'swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4'
     'actions/checkout@v4.4.0':
         ref: 'v4.4.0'
         commit: 'sha1-11d5960a326750d5838078e36cf38b85af677262'
@@ -23,11 +30,6 @@ dependencies:
         commit: 'sha1-64ab729a6294000f5aa4a4bc0b73d1f32bc45510'
         owner_id: 44036562
         repo_id: 642580244
-    'dtolnay/rust-toolchain@stable':
-        ref: 'stable'
-        commit: 'sha1-b725eda525362e7cf34af9a7243cac1e3f01a7ec'
-        owner_id: 1940490
-        repo_id: 260749683
     'ncipollo/release-action@v1.21.0':
         ref: 'v1.21.0'
         commit: 'sha1-339a81892b84b4eeb0f6e744e4574d79d0d9b8dd'
@@ -38,3 +40,8 @@ dependencies:
         commit: 'sha1-22a9089034f40e5a961c8808d113e2c98fb63676'
         owner_id: 18365890
         repo_id: 197176365
+    'swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4':
+        ref: 'v2.9.1'
+        commit: 'sha1-c19371144df3bb44fab255c43d04cbc2ab54d1c4'
+        owner_id: 580492
+        repo_id: 298565987
